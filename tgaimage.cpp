@@ -3,6 +3,8 @@
 
 #include <fstream>
 
+using namespace std:
+
 #pragma pack(push, 1)
 
 struct TGA_Header {
@@ -54,3 +56,21 @@ struct TGAColor {
         return *this;
     }
 };
+
+
+class TGAImage {
+protected:
+    unsigned char* data;
+    int width;
+    int height;
+    int bytespp;
+
+    bool load_rle_data(ifstream& in);
+    bool unload_rle_data(ofstream& out);
+
+public:
+    enum format {
+        GRAYSCALE = 1, RGB = 3, RGBA = 4
+    };
+
+}
