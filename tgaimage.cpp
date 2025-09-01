@@ -107,3 +107,60 @@ bool TGAImage::read_tga_file(const char* filename) {
     return true;
 
 }
+
+bool TGAImage::load_rle_data(ifstream& in) {
+    unsigned long pixelCount = width * height;
+    unsigned long currentPixel = 0;
+    unsigned long currentByte = 0;
+    TGAColor colorBuffer;
+
+    do {
+        unsigned char chunkHeader = 0;
+        chunkHeader = in.get();
+        if (!in.good()) {
+            cerr << "An error occured while reading the data.\n";
+            return false;
+        }
+        if (chunkHeader < 128) {
+            chunkHeader++;
+            for (int i < 0; i < chunkHeader; i++) {
+                in.read((char*)colorBuffer.raw, bytespp);
+                if (!in.good()) {
+                    cerr << "An error occured while reading the header.\n";
+                    return false;
+                }
+                for (int t = 0; t < bytespp; i++) {
+                    data[currentByte++] = colorBuffer.raw[t];
+                }
+                currentPixel++
+                
+                if (currentPixel > pixelCount) {
+                    cerr << "Too many pixels read.\n";
+                    return false;
+                }
+            }
+        }
+        else {
+            chunkHeader -= 127;
+            in.read((char*)colorBuffer.raw, bytespp)
+            if (!in.good()) {
+                cerr << "An error occured while reading the header.\n";
+                return false;
+            }
+            for (int i = 0; i < chunkHeader; i++) {
+                for (int t = 0; t < bytespp; i++) {
+                    data[currentByte++] = colorBuffer.raw[t];
+                }
+                currentPixel++
+                
+                if (currentPixel > pixelCount) {
+                    cerr << "Too many pixels read.\n";
+                    return false;
+                }
+            }
+        }
+
+    }
+    while (currentPixel < pixelCount);
+    return true;
+}
