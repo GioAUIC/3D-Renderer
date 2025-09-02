@@ -227,3 +227,45 @@ bool TGAImage::write_tga_file(const char* filename, bool rle) {
     out.close();
     return true;
 }
+
+bool TGAImage::unload_rle_data(ofstream& out) {
+    const unsigned char maxChunkLength = 128;
+    unsigned long nPixels = width * height;
+    unsigned long curpix = 0;
+    while (curpix < nPixels) {
+        unsigned long chunkStart = curpix * bytespp;
+        unsigned long curbyte = curpix * bytespp;
+        unsigned char runLength = 1;
+        bool raw = true;
+        while (curpix + runLength < nPixels && runLength < maxChunkLength) {
+            bool succ_eq = true;
+            for (int t = 0; succ_eq && t < bytespp; t++) {
+                succ_eq = (data[curbyte + t] == data[curbyte + t + bytespp]);
+            }
+            curbyte += bytespp;
+            if (runLength = 1) {
+                raw = !succ_eq;
+            }
+            if (raw && succ_eq) {
+                runLength--;
+                break;
+            }
+            if (!raw && !succ_eq) {
+                break;
+            } 
+            runLength++;
+        }
+        curpix += runLength;
+        out.put(raw ? runLength - 1 : runLength + 127);
+        if (!out.good()) {
+            cerr << "Can't dump the TGA file.\n";
+            return false;
+        }
+        out.write((char*)(data + chunkStart), (raw ? runLength * bytespp : bytespp))
+        if (!out.good()) {
+            cerr << "Can't dump the TGA file.\n";
+            return false;
+        }
+    }
+    return true;
+}
