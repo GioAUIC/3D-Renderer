@@ -269,3 +269,30 @@ bool TGAImage::unload_rle_data(ofstream& out) {
     }
     return true;
 }
+
+TGAColor TGAImage::get(int x, int y) {
+    if (!data || x < 0 || y < 0 || x >= width || y >= height) {
+        return TGAColor();
+    }
+    return TGAColor(data + (x + y * width) * bytespp, bytespp);
+}
+
+bool TGAImage::set(int x, int y, TGAColor c) {
+    if (!data || x < 0 || y < 0 || x >= width || y >= height) {
+        return false;
+    }
+    memcpy(data + (x + y * width) * bytespp, c.raw, bytespp);
+    return true;
+}
+
+int TGAImage::get_bytespp() {
+    return bytespp;
+}
+
+int TGAImage::get_width() {
+    return width;
+} 
+
+int TGAImage::get_height() {
+    return height;
+} 
