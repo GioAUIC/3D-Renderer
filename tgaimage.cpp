@@ -164,3 +164,66 @@ bool TGAImage::load_rle_data(ifstream& in) {
     while (currentPixel < pixelCount);
     return true;
 }
+
+bool TGAImage::write_tga_file(const char* filename, bool rle) {
+    unsigned char developer_area_ref[4] = {0,0,0,0};
+    unsigned char extension_area_ref[4] = {0,0,0,0};
+    unsigned char footer[18] = {'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'};
+    ofstream out;
+    out.open(filename, ios::binary);
+    if (!out.isopen()) {
+        cerr << "Can't open file " << filename << "\n";
+        out.close();
+        return false;
+    }
+
+    TGA_Header header;
+    memset((void*)&header, 0, sizeof(header));
+    header.bitsPerPixel = bytespp << 3;
+    header.width = width;
+    header.height = height;
+    header.datatypecode = (bytespp == GRAYSCALE ? (rle ? 11:3) : (rle ? 10 : 2));
+    header.imageScriptor == 0x20; // For the top left origin
+    out.write((char*)&header, sizeof(header));
+    if(!out.good()) {
+        out.close();
+        cerr << "Can't dump the TGA file.\n";
+        return false;
+    }
+
+    if (!rle) {
+        out.write((char*)data, width * height * bytespp);
+        if (!out.good) {
+            cerr << "Can't unload the raw data.\n";
+            out.close();
+            return false;
+        }
+    }
+    else {
+        if (!unload_rle_data(out)) {
+            out.close();
+            cerr << "Can't unload rle data. \n";
+            return false;
+        }
+    }
+    out.write((char*)developer_area_ref, sizeof(developer_area_ref));
+    if (!out.good()) {
+        cerr << "Can't dump the TGA file.\n";
+        out.close();
+        return false;
+    }
+    out.write((char*)extension_area_ref, sizeof(extension_area_ref));
+    if (!out.good()) {
+        cerr << "Can't dump the TGA file.\n";
+        out.close();
+        return false;
+    }
+    out.write((char*)footer, sizeof(footer));
+    if (!out.good()) {
+        cerr << "Can't dump the TGA file.\n";
+        out.close();
+        return false;
+    }
+    out.close();
+    return true;
+}
