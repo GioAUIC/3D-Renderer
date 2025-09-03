@@ -294,5 +294,52 @@ int TGAImage::get_width() {
 } 
 
 int TGAImage::get_height() {
-    return height;
-} 
+    return height ;
+}
+
+bool TGAImage::flip_horizontally() {
+    if (!data) {
+        return false;
+    }
+    int half = width >> 1;
+    for (int i = 0; i < half; i++) {
+        for (int j = 0; j < height; j++) {
+            TGAColor c1 = get(i, j);
+            TGAColor c2 = get(width - 1 - i, j);
+            set(i, j, c2);
+            set(width - 1 - i, j, c1);
+        }
+    }
+    return true;
+}
+
+bool TGAImage::flip_vertically() {
+    if (!data) {
+        return false;
+    }
+    unsigned long bytesPerLine = width * height * bytespp;
+    unsigned char* line = new unsigned char(bytesPerLine);
+    int half = height >> 1;
+
+    for (int i = 0; i < half; i++) {
+        unsigned long l1 = i * bytesPerLine;
+        unsigned long l2 = (height - 1 - i) * bytesPerLine;
+        memmove((void*) line, (void*)(data + l1), bytesPerLine);
+        memmove((void*)(data + l1), (void*)(data + l2), bytesPerLine);
+        memmove((void*)(data + l2), (void*)line, bytesPerLine);
+    }
+
+    delete[] line;
+    return true;
+}
+
+unsigned char* TGAImage::buffer() {
+    return data;
+}
+
+void TGAImage::clear() {
+    memset((void*)data, 0, width * height * bytespp);
+}
+
+
+
