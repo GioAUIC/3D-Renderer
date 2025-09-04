@@ -341,5 +341,43 @@ void TGAImage::clear() {
     memset((void*)data, 0, width * height * bytespp);
 }
 
+bool TGAImage::scale(int w, int h) {
+    if (w <= 0 || h <= 0 || !data) {return false;}
+    unsigned char* tData = new unsigned char [w * h * bytespp];
+    int nScanLine = 0;
+    int oScanLine = 0;
+    int erry = 0;
+    unsigned long nLineBytes = w * bytespp; 
+    unsigned long oLineBytes = width * bytespp;  
 
+    for (int j = 0; j < height; j++) {
+        int errx = width - w;
+        int nx = -bytespp;
+        int ox = -bytespp;
+        for (int i = 0; i < width; i++) {
+            ox += bytespp;
+            errx += w;
+            while (errx >= (int)width) {
+                errx -= width;
+                nx += bytespp;
+                memcpy(tData + nScanLine + nx, data + oScanLine + ox, bytespp);
+            }
+        }
+        erry += h;
+        oScanLine = oLineBytes;
+        while (erry >= (int)height) {
+            if (erry >= (int)height << 1) { // This jumps over a scanline
+                memcpy(tData + nScanLine + nLineBytes, tData + nScanLine, nLineBytes);
+            }
+            erry -= height;
+            nScanLine += nLineBytes;
+        }
+    }
+    delete[] data;
+    data = tData;
+    width = w;
+    height = h;
+    return true;
+
+}
 
