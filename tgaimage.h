@@ -19,7 +19,7 @@ struct TGA_Header {
     short width;
     short height;
     char bitsPerPixel;
-    char imagesCriptor;
+    char imageScriptor;
 };
 #pragma pack(pop)
 
@@ -43,7 +43,7 @@ struct TGAColor {
     TGAColor(const TGAColor &c) : val(c.val), bytespp(c.bytespp) {}
 
     TGAColor(const unsigned char *p, int bpp) : val(0), bytespp(bpp) {
-        for (int i = 0; i < bpp: i++) {
+        for (int i = 0; i < bpp; i++) {
             raw[i] = p[i];
         }
     }
@@ -81,7 +81,7 @@ public:
     bool flip_horizontally();
     bool flip_vertically();
     bool scale(int w, int h);
-    TGAColor get(t x, int y);
+    TGAColor get(int x, int y);
     bool set(int x, int y, TGAColor c);
     ~TGAImage();
     TGAImage & operator =(const TGAImage& img);

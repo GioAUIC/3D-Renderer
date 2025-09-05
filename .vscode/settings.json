@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "*.txt": "cmake",
+        "new": "cpp",
+        "array": "cpp",
+        "istream": "cpp",
+        "locale": "cpp",
+        "variant": "cpp",
+        "complex": "cpp",
+        "memory": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "vector": "cpp",
+        "ios": "cpp"
+    }
+}

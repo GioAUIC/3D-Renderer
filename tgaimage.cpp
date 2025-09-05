@@ -15,7 +15,7 @@ TGAImage::TGAImage(int w, int h, int bpp) : data(NULL), width(w), height(h), byt
     memset(data, 0, nBytes);
 }
 
-TGAImage::TGAImage(const TGAImage* img) {
+TGAImage::TGAImage(const TGAImage& img) {
     width = img.width;
     height = img.height;
     bytespp = img.bytespp;
@@ -26,12 +26,12 @@ TGAImage::TGAImage(const TGAImage* img) {
 
 TGAImage::~TGAImage() {
     if (data) {
-        delete{} data;
+        delete[] data;
     }
 }
 
 TGAImage & TGAImage::operator=(const TGAImage& img) {
-    if (this != &img){
+    if (this != &img) {
         if (data) {
             delete[] data;
         }
@@ -91,6 +91,7 @@ bool TGAImage::read_tga_file(const char* filename) {
             cerr << "An error occured while reading the data.\n";
             return false;
         }
+    }
     else {
         in.close();
         cerr << "Unknown file format " << (int)header.dataTypeCode << "\n";
