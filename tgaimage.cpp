@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
-#include <tgaimage.h>
+#include "tgaimage.h"
 
 using namespace std;
 
@@ -40,7 +40,7 @@ TGAImage & TGAImage::operator=(const TGAImage& img) {
         bytespp = img.bytespp;
         unsigned long nBytes = width * height * bytespp;
         data = new unsigned char[nBytes];
-        memcpy(data, img.data, nBytes)
+        memcpy(data, img.data, nBytes);
     }
     return *this;
 }
@@ -56,7 +56,7 @@ bool TGAImage::read_tga_file(const char* filename) {
 
     if (!in.is_open()) {
         cerr << "Could not open file " << filename << "\n";
-        in.close()
+        in.close();
         return false;
     }
     TGA_Header header;
@@ -104,7 +104,7 @@ bool TGAImage::read_tga_file(const char* filename) {
         flip_horizontally();
     }
     cerr << width << "x" << height << "/" << bytespp*8 << "\n";
-    in.close()
+    in.close();
     return true;
 
 }
@@ -124,7 +124,7 @@ bool TGAImage::load_rle_data(ifstream& in) {
         }
         if (chunkHeader < 128) {
             chunkHeader++;
-            for (int i < 0; i < chunkHeader; i++) {
+            for (int i = 0; i < chunkHeader; i++) {
                 in.read((char*)colorBuffer.raw, bytespp);
                 if (!in.good()) {
                     cerr << "An error occured while reading the header.\n";
@@ -133,7 +133,7 @@ bool TGAImage::load_rle_data(ifstream& in) {
                 for (int t = 0; t < bytespp; i++) {
                     data[currentByte++] = colorBuffer.raw[t];
                 }
-                currentPixel++
+                currentPixel++;
                 
                 if (currentPixel > pixelCount) {
                     cerr << "Too many pixels read.\n";
@@ -143,7 +143,7 @@ bool TGAImage::load_rle_data(ifstream& in) {
         }
         else {
             chunkHeader -= 127;
-            in.read((char*)colorBuffer.raw, bytespp)
+            in.read((char*)colorBuffer.raw, bytespp);
             if (!in.good()) {
                 cerr << "An error occured while reading the header.\n";
                 return false;
@@ -152,7 +152,7 @@ bool TGAImage::load_rle_data(ifstream& in) {
                 for (int t = 0; t < bytespp; i++) {
                     data[currentByte++] = colorBuffer.raw[t];
                 }
-                currentPixel++
+                currentPixel++;
                 
                 if (currentPixel > pixelCount) {
                     cerr << "Too many pixels read.\n";
@@ -172,7 +172,7 @@ bool TGAImage::write_tga_file(const char* filename, bool rle) {
     unsigned char footer[18] = {'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\0'};
     ofstream out;
     out.open(filename, ios::binary);
-    if (!out.isopen()) {
+    if (!out.is_open()) {
         cerr << "Can't open file " << filename << "\n";
         out.close();
         return false;
@@ -183,8 +183,8 @@ bool TGAImage::write_tga_file(const char* filename, bool rle) {
     header.bitsPerPixel = bytespp << 3;
     header.width = width;
     header.height = height;
-    header.datatypecode = (bytespp == GRAYSCALE ? (rle ? 11:3) : (rle ? 10 : 2));
-    header.imageScriptor == 0x20; // For the top left origin
+    header.dataTypeCode = (bytespp == GRAYSCALE ? (rle ? 11:3) : (rle ? 10 : 2));
+    header.imageScriptor = 0x20; // For the top left origin
     out.write((char*)&header, sizeof(header));
     if(!out.good()) {
         out.close();
@@ -194,7 +194,7 @@ bool TGAImage::write_tga_file(const char* filename, bool rle) {
 
     if (!rle) {
         out.write((char*)data, width * height * bytespp);
-        if (!out.good) {
+        if (!out.good()) {
             cerr << "Can't unload the raw data.\n";
             out.close();
             return false;
@@ -244,7 +244,7 @@ bool TGAImage::unload_rle_data(ofstream& out) {
                 succ_eq = (data[curbyte + t] == data[curbyte + t + bytespp]);
             }
             curbyte += bytespp;
-            if (runLength = 1) {
+            if (runLength == 1) {
                 raw = !succ_eq;
             }
             if (raw && succ_eq) {
@@ -262,7 +262,7 @@ bool TGAImage::unload_rle_data(ofstream& out) {
             cerr << "Can't dump the TGA file.\n";
             return false;
         }
-        out.write((char*)(data + chunkStart), (raw ? runLength * bytespp : bytespp))
+        out.write((char*)(data + chunkStart), (raw ? runLength * bytespp : bytespp));
         if (!out.good()) {
             cerr << "Can't dump the TGA file.\n";
             return false;
